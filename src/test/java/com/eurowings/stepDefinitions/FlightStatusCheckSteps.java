@@ -1,185 +1,150 @@
 package com.eurowings.stepDefinitions;
 
+
 import com.eurowings.pages.FlightStatusPage;
 import com.eurowings.utilities.BrowserUtils;
 import com.eurowings.utilities.ConfigurationReader;
 import com.eurowings.utilities.Driver;
-import com.eurowings.utilities.Environment;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.junit.Assert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class FlightStatusCheckSteps {
 
-    FlightStatusPage flightStatusPage = new FlightStatusPage();
+    FlightStatusPage fsPage = new FlightStatusPage();
 
     @Given("User navigates to flight status check page")
     public void user_navigates_to_flight_status_check_page() {
         Driver.getDriver().get(ConfigurationReader.getProperty("url"));
-        flightStatusPage.acceptPrivacySettings();
+    }
+
+    @Given("User verifies page title is {string}")
+    public void user_verifies_page_title_is(String pageTitle) {
+        BrowserUtils.verifyTitle(pageTitle);
+    }
+
+    @Given("User accepts privacy settings")
+    public void user_accepts_privacy_settings() {
+        fsPage.acceptPrivacySettings();
+    }
+
+    @Then("The Show flight status button should be disabled by default")
+    public void the_show_flight_status_button_should_be_disabled_by_default() {
+        BrowserUtils.verifyElementNotEnabled(fsPage.showFlightStatusButton);
     }
 
     @When("User clicks on the {string} radio button")
-    public void user_clicks_on_the_radio_button(String radioButtonName) {
-        BrowserUtils.scrollToElement(flightStatusPage.flightRouteRadioButton);
-        switch (radioButtonName) {
-            case "Flight route":
-                if (!flightStatusPage.flightRouteRadioButton.isSelected()) {
-                    flightStatusPage.flightRouteRadioButton.click();
-                }
+    public void user_clicks_on_the_radio_button(String radioButtonValue) {
+        BrowserUtils.scrollToElement(fsPage.flightRouteRadioButton);
+        fsPage.clickRadioButton(fsPage.flightRouteAndNumberRadioButtons, radioButtonValue);
+    }
+
+    @When("User clicks on the {string} dropdown")
+    public void user_clicks_on_the_dropdown(String dropdownName) {
+        BrowserUtils.scrollToElement(fsPage.flightNumberRadioButton);
+        switch (dropdownName) {
+            case "departure airport":
+                fsPage.departureAirportDropdown.click();
                 break;
-            case "Flight number":
-                flightStatusPage.flightNumberRadioButton.click();
+            case "destination airport":
+                fsPage.destinationAirportDropdown.click();
                 break;
+        }
+    }
+
+    @When("User selects on the {string} as the airport name")
+    public void user_selects_on_the_as_the_airport_name(String airportName) {
+        fsPage.selectAirport(airportName);
+    }
+
+    @Then("User should see {string} in departure airport dropdown")
+    public void user_should_see_in_departure_airport_dropdown(String departureAirportName) {
+        String actualDepartureAirportName = fsPage.departureAirportDropdownBox.getText();
+        Assert.assertEquals(
+                "Expected departure airport name: " + departureAirportName + " but found: " + actualDepartureAirportName,
+                departureAirportName, actualDepartureAirportName);
+    }
+
+    @Then("User should see {string} in destination airport dropdown")
+    public void user_should_see_in_destination_airport_dropdown(String destinationAirportName) {
+        String actualDestinationAirportName = fsPage.destinationAirportDropdownBox.getText();
+        Assert.assertEquals(
+                "Expected destination airport name: " + destinationAirportName + " but found: " + actualDestinationAirportName,
+                destinationAirportName, actualDestinationAirportName);
+    }
+
+    @When("User clicks on the date picker")
+    public void user_clicks_on_the_date_picker() {
+        fsPage.departureDatePicker.click();
+    }
+
+    @Then("User should be able to select dates from today up to 3 days in the future and past")
+    public void user_should_be_able_to_select_dates_from_today_up_to_3_days_in_the_future_and_past() {
+        fsPage.selectAvailableDaysAndVerify();
+    }
+
+    @Then("User selects {string} as the departure date")
+    public void user_selects_as_the_departure_date(String day) {
+        fsPage.selectDate(day);
+    }
+
+    @When("User clicks the show flight status button")
+    public void user_clicks_the_show_flight_status_button() {
+        fsPage.showFlightStatusButton.click();
+    }
+
+    @Then("System should display correct {string} and {string}")
+    public void system_should_display_correct_and(String departureAirportName, String destinationAirportName) {
+        if (!fsPage.flightResultStatusCards.isEmpty()) {
+            for (WebElement eachStatusCard : fsPage.flightResultStatusCards) {
+                boolean departureMatched = eachStatusCard.getText().contains(departureAirportName);
+                boolean destinationMatched = eachStatusCard.getText().contains(destinationAirportName);
+                Assert.assertTrue("Departure airport not matched: " + eachStatusCard.getText(), departureMatched);
+                Assert.assertTrue("Destination airport not matched: " + eachStatusCard.getText(), destinationMatched);
+            }
+        } else {
+            BrowserUtils.verifyElementDisplayed(fsPage.noResultMessage);
         }
     }
 
     @Then("Departure date and flight number input fields should be displayed")
     public void departure_date_and_flight_number_input_fields_should_be_displayed() {
-        Assert.assertTrue(flightStatusPage.flightNumberInputBox.isDisplayed());
-        Assert.assertTrue(flightStatusPage.flightNumberDepartureDatePicker.isDisplayed());
+        BrowserUtils.verifyElementDisplayedAndEnabled(fsPage.flightNumberInputBox);
+        BrowserUtils.verifyElementDisplayedAndEnabled(fsPage.departureDatePicker);
     }
 
     @Then("Departure and destination airport fields and departure date field should be displayed")
     public void departure_and_destination_airport_fields_and_departure_date_field_should_be_displayed() {
-        Assert.assertTrue(flightStatusPage.departureAirportDropdown.isDisplayed());
-        Assert.assertTrue(flightStatusPage.destinationAirportDropdown.isDisplayed());
-        Assert.assertTrue(flightStatusPage.flightRouteDepartureDateField.isDisplayed());
+        BrowserUtils.verifyElementDisplayedAndEnabled(fsPage.departureAirportDropdown);
+        BrowserUtils.verifyElementDisplayedAndEnabled(fsPage.destinationAirportDropdown);
+        BrowserUtils.verifyElementDisplayedAndEnabled(fsPage.departureDatePicker);
     }
 
-    @When("User clicks on the {string} dropdown")
-    public void user_clicks_on_the_dropdown(String dropdownName) {
-        BrowserUtils.scrollToElement(flightStatusPage.flightRouteRadioButton);
-        switch (dropdownName) {
-            case "departure airport":
-                flightStatusPage.departureAirportDropdown.click();
-                break;
-            case "destination airport":
-                flightStatusPage.destinationAirportDropdown.click();
-                break;
-        }
+    @Then("User should see {string} in result")
+    public void user_should_see_in_result(String day) {
+        fsPage.verifySelectedDay(day);
     }
 
-    @Then("List of available departure airports should be displayed")
-    public void list_of_available_departure_airports_should_be_displayed() {
-        Assert.assertTrue(flightStatusPage.nationalAirports.stream()
-                .allMatch(WebElement::isDisplayed));
-        Assert.assertTrue(flightStatusPage.internationalAirports.stream()
-                .allMatch(WebElement::isDisplayed));
-        flightStatusPage.nationalAirports.get(0).click();
+    @When("User enters {string} as the flight number")
+    public void user_enters_as_the_flight_number(String flightNumber) {
+        fsPage.flightNumberInputBox.sendKeys(flightNumber);
     }
 
-    @Then("List of available destination airports should be displayed")
-    public void list_of_available_destination_airports_should_be_displayed() {
-        Assert.assertTrue(flightStatusPage.destinationAirports.stream()
-                .allMatch(WebElement::isDisplayed));
-        flightStatusPage.destinationAirports.get(0).click();
-    }
-
-    @When("User clicks on the date picker")
-    public void user_clicks_on_the_date_picker() {
-        flightStatusPage.flightRouteDepartureDateField.click();
-    }
-
-    @Then("User should be able to select dates from {string} up to {int} days in the future")
-    public void user_should_be_able_to_select_dates_from_up_to_days_in_the_future(String today, int day) {
-        flightStatusPage.selectDate(today, 3);
-        for (int i = flightStatusPage.getTodayDate(); i < flightStatusPage.getTodayDate() + 3; i++) {
-            Assert.assertTrue(flightStatusPage.calendarDays.get(i).isEnabled());
-        }
-    }
-
-    @Then("Dates {int} days in the future should be disabled")
-    public void dates_4_days_in_the_future_should_be_disabled(int day) {
-        Assert.assertFalse(flightStatusPage.calendarDays.get(flightStatusPage.getTodayDate() + day).isEnabled());
-    }
-
-    @When("User has not filled in all required fields")
-    public void user_has_not_filled_in_all_required_fields() {
-        flightStatusPage.showFlightStatusButton.click();
-    }
-
-    @Then("The Show flight status button should be disabled")
-    public void the_show_flight_status_button_should_be_disabled() {
-        Assert.assertFalse(flightStatusPage.showFlightStatusButton.isEnabled());
-    }
-
-    @When("User has filled in all required fields")
-    public void user_has_filled_in_all_required_fields() {
-        flightStatusPage.departureAirportDropdown.click();
-        flightStatusPage.nationalAirports.get(0).click();
-    }
-
-    @Then("The Show flight status button should be enabled")
-    public void the_show_flight_status_button_should_be_enabled() {
-        Assert.assertTrue(flightStatusPage.showFlightStatusButton.isEnabled());
-    }
-
-
-    String currentAirportName = "";
-
-    @When("User selects on the {string} as the airport")
-    public void user_selects_on_the_as_the_airport(String airportName) {
-
-        for (WebElement eachAirport : flightStatusPage.allAirports) {
-            if (eachAirport.getText().contains(airportName)) {
-                System.out.println(eachAirport.getText());
-                currentAirportName = eachAirport.getText();
-                eachAirport.click();
-                break;
-            }
-        }
-    }
-
-    @Then("User should see {string} in departure airport dropdown")
-    public void user_should_see_in_departure_airport_dropdown(String departureAirport) {
-        Assert.assertEquals(departureAirport, flightStatusPage.departureAirportDropdownBox.getText());
-    }
-
-    @Then("User should see {string} in destination airport dropdown")
-    public void user_should_see_in_destination_airport_dropdown(String destinationAirport) {
-        Assert.assertEquals(destinationAirport, flightStatusPage.destinationAirportDropdownBox.getText());
-    }
-
-    @When("User selects {string} as the departure date")
-    public void user_selects_as_the_departure_date(String day) throws InterruptedException {
-        flightStatusPage.selectDate(day);
-        Thread.sleep(4000);
-    }
-
-
-    @When("User clicks the {string} button")
-    public void user_clicks_the_button(String string) {
-        flightStatusPage.showFlightStatusButton.click();
-    }
-
-    @Then("System should display correct {string} and {string} flights")
-    public void system_should_display_correct_flights(String departureAirportName, String destinationAirportName) {
-        if (flightStatusPage.flightResultStatusCards.size() > 0) {
-            for (WebElement eachFlightStatusCard : flightStatusPage.flightResultStatusCards) {
-                for (WebElement eachDepartureResult : flightStatusPage.departureResult) {
-                    Assert.assertTrue(eachFlightStatusCard.getText().contains(eachDepartureResult.getText()));
-                    System.out.println("Departure = " + eachDepartureResult.getText());
-                }
-                for (WebElement eachDestinationResult : flightStatusPage.destinationResult) {
-                    Assert.assertTrue(eachFlightStatusCard.getText().contains(eachDestinationResult.getText()));
-                    System.out.println("Destination = " + eachDestinationResult.getText());
-                }
+    @Then("System should display correct {string} and {string} and {string}")
+    public void system_should_display_correct_and_and(String departureAirportName, String destinationAirportName, String flightNumber) {
+        if (!fsPage.flightResultStatusCards.isEmpty()) {
+            for (WebElement eachStatusCard : fsPage.flightResultStatusCards) {
+                boolean departureMatched = eachStatusCard.getText().contains(departureAirportName);
+                boolean destinationMatched = eachStatusCard.getText().contains(destinationAirportName);
+                boolean flightNumberMatched = eachStatusCard.getText().contains(flightNumber);
+                Assert.assertTrue("Departure airport not matched: " + eachStatusCard.getText(), departureMatched);
+                Assert.assertTrue("Destination airport not matched: " + eachStatusCard.getText(), destinationMatched);
+                Assert.assertTrue("Flight number not matched: " + eachStatusCard.getText(), flightNumberMatched);
             }
         } else {
-            Assert.assertTrue(flightStatusPage.noResultMessage.getText().equals("Unfortunately, we could not find any results for your search."));
+            BrowserUtils.verifyElementDisplayed(fsPage.noResultMessage);
         }
     }
-
-
 }
