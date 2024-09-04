@@ -1,7 +1,7 @@
-package com.eurowings.pages;
+package ui.eurowings.pages;
 
 
-import com.eurowings.utilities.BrowserUtils;
+import ui.eurowings.utilities.BrowserUtils;
 import org.junit.Assert;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -93,7 +93,7 @@ public class FlightStatusPage extends BasePage {
     }
 
     public void verifySelectedDay(String day) {
-        int actualDay = Integer.parseInt(selectedDay.getText().split(" ")[1].split("/")[0]);
+        int actualDay = Integer.parseInt(selectedDay.getText().split(" ")[1].split("/")[0]); // Tue, 06/08/
         Assert.assertEquals("Expected day: " + Integer.parseInt(day) + " but found: " + actualDay, Integer.parseInt(day), actualDay);
     }
 
@@ -121,8 +121,22 @@ public class FlightStatusPage extends BasePage {
                 eachAvailableDayElement.click();
                 System.out.println("Selected day: " + dayText);
                 break;
-
             }
         }
     }
+
+    public void airportPicker(String dropdownName){
+        BrowserUtils.scrollToElement(flightNumberRadioButton);
+        switch (dropdownName) {
+            case "departure airport":
+                departureAirportDropdown.click();
+                break;
+            case "destination airport":
+                destinationAirportDropdown.click();
+                break;
+        }
+    }
+
+
+
 }

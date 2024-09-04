@@ -1,4 +1,4 @@
-package com.eurowings.runners;
+package runners;
 
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
@@ -14,10 +14,10 @@ import org.junit.runner.RunWith;
                 "json:target/cucumber.json"
         },
         features = "src/test/resources/features",
-        glue = "com/eurowings/stepDefinitions",
+        glue = {"ui.eurowings.stepDefinitions", "api.zippopotam.stepDefinitions"},
         dryRun = false,
         publish = true,
-        tags = "@FlightStatus"
+        tags = "@API"
 )
 
 

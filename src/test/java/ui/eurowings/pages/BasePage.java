@@ -1,6 +1,6 @@
-package com.eurowings.pages;
+package ui.eurowings.pages;
 
-import com.eurowings.utilities.Driver;
+import ui.eurowings.utilities.Driver;
 import org.openqa.selenium.support.PageFactory;
 
 public abstract class BasePage {

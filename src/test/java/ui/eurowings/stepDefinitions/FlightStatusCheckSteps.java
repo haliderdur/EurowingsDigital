@@ -1,10 +1,10 @@
-package com.eurowings.stepDefinitions;
+package ui.eurowings.stepDefinitions;
 
 
-import com.eurowings.pages.FlightStatusPage;
-import com.eurowings.utilities.BrowserUtils;
-import com.eurowings.utilities.ConfigurationReader;
-import com.eurowings.utilities.Driver;
+import ui.eurowings.pages.FlightStatusPage;
+import ui.eurowings.utilities.BrowserUtils;
+import ui.eurowings.utilities.ConfigurationReader;
+import ui.eurowings.utilities.Driver;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -43,15 +43,7 @@ public class FlightStatusCheckSteps {
 
     @When("User clicks on the {string} dropdown")
     public void user_clicks_on_the_dropdown(String dropdownName) {
-        BrowserUtils.scrollToElement(fsPage.flightNumberRadioButton);
-        switch (dropdownName) {
-            case "departure airport":
-                fsPage.departureAirportDropdown.click();
-                break;
-            case "destination airport":
-                fsPage.destinationAirportDropdown.click();
-                break;
-        }
+        fsPage.airportPicker(dropdownName);
     }
 
     @When("User selects on the {string} as the airport name")

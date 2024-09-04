@@ -1,4 +1,4 @@
-@FlightStatus
+@TEST @UI
 Feature: Flight Status Check
   Agile story: As a user, I want to check the flight status by flight route or flight number
   so that I can plan my travel accordingly.
@@ -8,7 +8,7 @@ Feature: Flight Status Check
     And User verifies page title is "Flight status - Information - Eurowings"
     And User accepts privacy settings
 
-  @TC01
+  @UI01
   Scenario Outline: Check flight status by flight route
     Given The Show flight status button should be disabled by default
     When User clicks on the "FLIGHT_ROUTE" radio button
@@ -27,13 +27,13 @@ Feature: Flight Status Check
 
     Examples:
       | departure | destination | day | departure airport name | destination airport name |
-      | CGN       | BER         | 7   | Cologne-Bonn           | Berlin Brandenburg       |
-      | BER       | CGN         | 8   | Berlin Brandenburg     | Cologne-Bonn             |
-      | DUS       | LHR         | 4   | Dusseldorf             | London Heathrow          |
-      | BCN       | HAM         | 7   | Barcelona              | Hamburg                  |
+      | CGN       | BER         | 17   | Cologne-Bonn           | Berlin Brandenburg       |
+      | BER       | CGN         | 14   | Berlin Brandenburg     | Cologne-Bonn             |
+      | DUS       | LHR         | 16   | Dusseldorf             | London Heathrow          |
+      | BCN       | HAM         | 13   | Barcelona              | Hamburg                  |
 
 
-  @TC02
+  @UI02
   Scenario Outline: Check flight status by flight number
     Given The Show flight status button should be disabled by default
     When User clicks on the "FLIGHT_NUMBER" radio button
@@ -47,7 +47,7 @@ Feature: Flight Status Check
 
     Examples:
       | flight number | day | departure | destination |
-      | EW12          | 7   | CGN       | BER         |
-      | EW13          | 8   | BER       | CGN         |
-      | EW9468        | 5   | DUS       | LHR         |
-      | EW7521        | 6   | BCN       | HAM         |
+      | EW12          | 16   | CGN       | BER         |
+      | EW13          | 14   | BER       | CGN         |
+      | EW9468        | 18   | DUS       | LHR         |
+      | EW7521        | 15   | BCN       | HAM         |

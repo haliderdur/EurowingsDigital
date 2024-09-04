@@ -1,4 +1,4 @@
-package com.eurowings.utilities;
+package ui.eurowings.utilities;
 
 
 import org.junit.Assert;

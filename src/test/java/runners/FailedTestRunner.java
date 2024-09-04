@@ -1,4 +1,4 @@
-package com.eurowings.runners;
+package runners;
 
 
 import io.cucumber.junit.Cucumber;
@@ -7,7 +7,7 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-        glue = "com/eurowings/stepDefinitions",
+        glue = {"ui/eurowings/stepDefinitions", "api/zippopotam/stepDefinitions"},
         features = "@target/rerun.txt"
 )
 
