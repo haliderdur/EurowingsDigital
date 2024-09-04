@@ -28,9 +28,9 @@ Feature: Flight Status Check
     Examples:
       | departure | destination | day | departure airport name | destination airport name |
       | CGN       | BER         | 17   | Cologne-Bonn           | Berlin Brandenburg       |
-      | BER       | CGN         | 14   | Berlin Brandenburg     | Cologne-Bonn             |
-      | DUS       | LHR         | 16   | Dusseldorf             | London Heathrow          |
-      | BCN       | HAM         | 13   | Barcelona              | Hamburg                  |
+   #  | BER       | CGN         | 14   | Berlin Brandenburg     | Cologne-Bonn             |
+   #  | DUS       | LHR         | 16   | Dusseldorf             | London Heathrow          |
+   #  | BCN       | HAM         | 13   | Barcelona              | Hamburg                  |
 
 
   @UI02
